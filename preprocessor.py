@@ -213,7 +213,7 @@ if __name__=="__main__":
     logging.basicConfig(filename=debug_log, format='[%(asctime)s] %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%b%d %H:%M:%S')
 
     load_inputs()
-
+	
     sb_base_percent = tiler_scenarios.itervalues().next()[0]
 
     ### Initialize function classes
