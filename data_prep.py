@@ -19,8 +19,8 @@ def save_inputs():
         if not os.path.exists('inputs'):
             os.mkdir('inputs')
         cPickle.dump(inventory, open(r'inputs\inventory.pkl', 'wb'))
-        cPickle.dump(historicFire1, open(r'inputs\historicFire1.pkl', 'wb'))
-        cPickle.dump(historicFire2, open(r'inputs\historicFire2.pkl', 'wb'))
+        cPickle.dump(historicFire, open(r'inputs\historicFire.pkl', 'wb'))
+        #cPickle.dump(historicFire2, open(r'inputs\historicFire2.pkl', 'wb'))
         cPickle.dump(historicHarvest, open(r'inputs\historicHarvest.pkl', 'wb'))
         cPickle.dump(historicInsect, open(r'inputs\historicInsect.pkl', 'wb'))
         cPickle.dump(rollbackDisturbances, open(r'inputs\rollbackDisturbances.pkl', 'wb'))
@@ -80,15 +80,15 @@ if __name__=="__main__":
 
     #### Variables
     # FMU number as a string
-    FMU_number = '177'
+    FMU_number = '90025'
     # FMU name, replace spaces in the name with underscores
-    FMU_name = 'Dog_River'
+    FMU_name = 'Pasquia_Porcupine_FMA'
     # directory path to the working directory for relative paths
-    working_directory = r'G:\GCBM\17_BC_ON_1ha\05_working_ON\FMU_{}_{}'.format(FMU_number,FMU_name)
+    working_directory = r'G:\GCBM\15_SFI\05_working_SK\FMU_{}_{}'.format(FMU_number,FMU_name)
     # directory path to the external data directory for relative paths
-    external_data = r'G:\GCBM\17_BC_ON_1ha\05_working_ON\00_external_data'
+    external_data = r'G:\GCBM\15_SFI\05_working_SK\00_external_data'
     # Tile resolution in degrees
-    resolution = 0.1
+    resolution = 0.01
 
     # The percent of harvest area slashburned in the Base scenario
     sb_percent = 25
@@ -100,52 +100,49 @@ if __name__=="__main__":
     # Set false for a centroid rule to be used (take attributes from the polygon at the
     # center of the grid cell)
     # The area majority rule is more robust but requires more memory and computing time
-    area_majority_rule = True
+    area_majority_rule = False
 
     ## Year ranges
     historic_range = [1990,2015]
-    rollback_range = [1990,2015]
-    future_range = [2016,2070]
+    rollback_range = [1990,2000]
+    future_range = [2016,2015]
     # Activity start year must be after historic range
     activity_start_year = 2018
 
 
     #### Spatial Inputs
-    province = "Ontario"
+    province = "Saskatchewan"
 
-    ## Inventory
+     ## Inventory
     # Path the the inventory gdb workspace
-    inventory_workspace = r"{}\01_spatial\02_inventory\PCM2015v5.gdb".format(external_data)
+    inventory_workspace = r"{}\01_spatial\02_inventory\Processed.gdb".format(external_data)
     # Layer name of the inventory in the gdb
-    inventory_layer = "invON2015_reproj"
+    inventory_layer = "Pasquia_inv"
     # The starting year of the inventory
-    inventory_year = 2015
+    inventory_year = 2003
     # A dictionary with the classifiers as keys and the associated field names (as
     # they appear in the inventory) as values.
     inventory_classifier_attr = {
-        "SFU": "SFU",
-        "SI":"SI",
-        "SUBMU":"SUBMU",
-        "SPCOMP":"SPCOMP"
+        "RSM_KEY_BA": "RSM_KEY_BASE_CD",
+        "FMZ_ID":"FMZ_ID",
+		"LdSpp":"LdSpp"
     }
     inventory_field_names = {
-        "age": "AGE2015",
-        "species": "SPCOMP"
+        "age": "AGE_2003",
+		"species": "LdSpp"
     }
 
     ## Disturbances
     # directory or geodatabase
-    NFDB_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire\shapefiles".format(external_data)
-    # filter to get all layers within the directory/geodatabase, following glob syntax
-    NFDB_filter = "NFDB*.shp"
-    # the field from which the year can be extracted. These must have different names for each disturbance
-    NFDB_year_field = "YEAR_"
-    NBAC_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire\shapefiles".format(external_data)
-    NBAC_filter = "NBAC*.shp"
-    NBAC_year_field = "EDATE"
     harvest_workspace = r"{}\01_spatial\03_disturbances\01_historic\02_harvest".format(external_data)
-    harvest_filter = "Ontario_C2C_Harvest_1990_2011.shp"
+    # filter to get all layers within the directory/geodatabase, following glob syntax
+    harvest_filter = "C2CHarvest2011_SK.shp"
+    # the field from which the year can be extracted
     harvest_year_field = "HARV_YR"
+	
+    wildfire_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire".format(external_data)
+    wildfire_filter = "C2CFire2011_SK.shp"
+    wildfire_year_field = "FIRE_YR"
     # set each to None if there is no insect data
     insect_workspace = None
     insect_filter = None
@@ -153,15 +150,15 @@ if __name__=="__main__":
     # directory path to the spatial reference directory containing the FMU and PSPU boundaries
     spatial_reference = r"{}\01_spatial\01_spatial_reference".format(external_data)
     # file name or filter to find the FMU boundaries in the spatial reference directory
-    spatial_boundaries = "PSPUS_2017_Ontario.shp"
+    spatial_boundaries = "PSPUS_2016_FINAL_1_Reprojected.shp"
     # file name or filter to find the PSPU boundaries in the spatial reference directory
     # the spatial_boundaries_ri should contain the reporting indicators eco boundary and admin boundary
-    spatial_boundaries_ri = "PSPUS_2016.shp"
+    spatial_boundaries_ri = "PSPUS_2016_FINAL_1_Reprojected.shp"
     # filter used to get the desired study area from the TSA boundaries.
     # change only the associated values for "field" and "code"
     study_area_filter = {
-        "field": "FMU_CODE",
-        "code": "'177'"
+        "field": "PSPU_ID",
+        "code": "90025"
     }
     # field names for the Admin and Eco attributes in the spatial_boundaries_ri file
     spatial_boundaries_attr = {
@@ -186,8 +183,8 @@ if __name__=="__main__":
     ### Initialize Spatial Inputs
     inventory = preprocess_tools.inputs.Inventory(workspace=inventory_workspace, filter=inventory_layer,
         year=inventory_year, classifiers_attr=inventory_classifier_attr, field_names=inventory_field_names, province=province)
-    historicFire1 = preprocess_tools.inputs.HistoricDisturbance(NFDB_workspace, NFDB_filter, NFDB_year_field)
-    historicFire2 = preprocess_tools.inputs.HistoricDisturbance(NBAC_workspace, NBAC_filter, NBAC_year_field)
+    historicFire = preprocess_tools.inputs.HistoricDisturbance(wildfire_workspace, wildfire_filter, wildfire_year_field)
+    #historicFire2 = preprocess_tools.inputs.HistoricDisturbance(NBAC_workspace, NBAC_filter, NBAC_year_field)
     historicHarvest = preprocess_tools.inputs.HistoricDisturbance(harvest_workspace, harvest_filter, harvest_year_field)
     historicInsect = preprocess_tools.inputs.HistoricDisturbance(insect_workspace, insect_filter, None)
     spatialBoundaries = preprocess_tools.inputs.SpatialBoundaries(spatial_reference, spatial_boundaries, spatial_boundaries_ri,
@@ -195,13 +192,13 @@ if __name__=="__main__":
     NAmat = preprocess_tools.inputs.NAmericaMAT(os.path.dirname(NAmat_path), os.path.basename(NAmat_path))
     rollbackDisturbances = preprocess_tools.inputs.RollbackDisturbances(rollback_dist_out)
 
-    external_spatial_data = [historicFire1, historicFire2, historicHarvest, NAmat, spatialBoundaries]
+    external_spatial_data = [historicFire, historicHarvest, NAmat, spatialBoundaries]
     # Warning: All spatial inputs that are not in WGS 1984 coordinate system need
     # to be reprojected
     reproject = [
         # historicFire1, historicFire2, historicHarvest, NAmat, spatialBoundaries
     ]
-    clip = [historicFire1, historicFire2, historicHarvest]
+    clip = [historicFire, historicHarvest]
     copy = [sp for sp in external_spatial_data if sp not in clip]
 
     FMU_filter = '"{}" = {}'.format(study_area_filter["field"], study_area_filter["code"])
@@ -223,9 +220,10 @@ if __name__=="__main__":
     # Different scenarios to be run by the tiler (before Disturbance Matrix distinctions)
     # The scenario 'Base' must be included
     # Format: {<Scenario>: [<Slashburn Percent Base>, <Slashburn Percent After Actv>, <Harvest Percent After Actv>]}
-    tiler_scenarios = {'Base':[sb_percent, sb_percent, 100],'B':[sb_percent, sb_percent, 95],'D':[sb_percent, 0, 100]}
+    tiler_scenarios = {'Base':[sb_percent, sb_percent, 100]}
+    # tiler_scenarios = {'Base':[sb_percent, sb_percent, 100],'B':[sb_percent, sb_percent, 95],'D':[sb_percent, 0, 100]}
     # GCBM scenarios (after Disturbance Matrix distinctions) with the associated tiler scenario as the value
-    GCBM_scenarios = {'Base':'Base', 'A':'Base', 'B':'B', 'C':'Base', 'D':'D'}
+    GCBM_scenarios = {'Base':'Base'}
 
     ## Recliner2GCBM
     recliner2gcbm_config_dir = r"{}\02a_recliner2GCBM_input".format(working_directory)
@@ -237,17 +235,17 @@ if __name__=="__main__":
 
     ## Yield table
     # path to yield table in external data
-    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\yield.csv".format(external_data)
+    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\Pasquia_yield.csv".format(external_data)
     # path to the yield table (recommended to be in the recliner2gcbm config directory)
-    yieldTable_path = r"{}\yield.csv".format(recliner2gcbm_config_dir)
+    yieldTable_path = r"{}\Pasquia_yield.csv".format(recliner2gcbm_config_dir)
     # The classifiers as keys and the column as value
-    yieldTable_classifier_cols = {"SUBMU":1, "SFU":2, "SI":3, "SPCOMP":4}
+    yieldTable_classifier_cols = {"RSM_KEY_BA":0, "FMZ_ID":1,"LdSpp":2}
     # True if the first row of the yield table is a header
     yieldTable_header = True
     # year interval between age increments
-    yieldTable_interval = 10
+    yieldTable_interval = 5
     # species column and increment range
-    yieldTable_cols = {"SpeciesCol":5,"IncrementRange":[7,33]}
+    yieldTable_cols = {"SpeciesCol":3,"IncrementRange":[4,45]}
 
     ## AIDB
     # path to aidb in external data where disturbance matrix is already configured
