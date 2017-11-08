@@ -9,14 +9,6 @@ import sys
 import cPickle
 import logging
 
-sys.path.insert(0, '../../../03_tools/regional_preprocessing/gcbm_preprocessing')
-import preprocess_tools
-gridGeneration = __import__("01_grid_generation")
-rollback = __import__("02_rollback")
-tiler_imp = __import__("03_tiler")
-recliner2GCBM = __import__("04_recliner2GCBM")
-GCBMconfig = __import__("05_GCBM_config")
-
 def configure_tiler():
         tiler.defineBoundingBox(tiler_output_dir) # ***
         general_lyrs = tiler.processGeneralLayers() # ***
@@ -204,6 +196,14 @@ def load_objects():
         raise
 
 if __name__=="__main__":
+    sys.path.insert(0, '../../../03_tools/regional_preprocessing/gcbm_preprocessing')
+    import preprocess_tools
+    gridGeneration = __import__("01_grid_generation")
+    rollback = __import__("02_rollback")
+    tiler_imp = __import__("03_tiler")
+    recliner2GCBM = __import__("04_recliner2GCBM")
+    GCBMconfig = __import__("05_GCBM_config")
+    
     # Logging
     debug_log = r'logs\DebugLogPreprocessor.log'
     if not os.path.exists(os.path.dirname(debug_log)):
@@ -213,7 +213,7 @@ if __name__=="__main__":
     logging.basicConfig(filename=debug_log, format='[%(asctime)s] %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%b%d %H:%M:%S')
 
     load_inputs()
-	
+
     sb_base_percent = tiler_scenarios.itervalues().next()[0]
 
     ### Initialize function classes
