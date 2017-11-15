@@ -268,7 +268,11 @@ if __name__=="__main__":
         transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
     for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
         #tiler.processProjectedDisturbances(miti_scenario, tiler_scenarios[miti_scenario])
-        tiler.runTiler(tiler_output_dir, miti_scenario, False)
+        if not transitionRules:
+            transitionRules = tiler.runTiler(tiler_output_dir, miti_scenario, True)
+        else:
+            tiler.runTiler(tiler_output_dir, miti_scenario, False)
+
 
     # -- Prep and run recliner2GCBM
     r2GCBM.prepTransitionRules(transitionRules) # ***
