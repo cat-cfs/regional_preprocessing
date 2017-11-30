@@ -1,9 +1,4 @@
 ### GCBM Preprocessing
-
-## Imports
-import archook
-archook.get_arcpy()
-import arcpy
 import os
 import sys
 import cPickle
