@@ -1,9 +1,4 @@
 ### GCBM Preprocessing
-
-## Imports
-import archook
-archook.get_arcpy()
-import arcpy
 import os
 import sys
 import cPickle
@@ -192,92 +187,104 @@ def load_objects():
         raise
 
 if __name__=="__main__":
-    sys.path.insert(0, '../../../03_tools/regional_preprocessing/gcbm_preprocessing')
-    import preprocess_tools
-    gridGeneration = __import__("01_grid_generation")
-    rollback = __import__("02_rollback")
-    tiler_imp = __import__("03_tiler")
-    recliner2GCBM = __import__("04_recliner2GCBM")
-    GCBMconfig = __import__("05_GCBM_config")
-    
-    # Logging
-    debug_log = r'logs\DebugLogPreprocessor.log'
-    if not os.path.exists(os.path.dirname(debug_log)):
-        os.makedirs(os.path.dirname(debug_log))
-    elif os.path.exists(debug_log):
-        os.unlink(debug_log)
-    logging.basicConfig(filename=debug_log, format='[%(asctime)s] %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%b%d %H:%M:%S')
+    try:
+        for flag in ("success", "failure"):
+            if os.path.exists(flag):
+                os.remove(flag)
+                    
+        sys.path.insert(0, '../../../03_tools/regional_preprocessing/gcbm_preprocessing')
+        import preprocess_tools
+        gridGeneration = __import__("01_grid_generation")
+        rollback = __import__("02_rollback")
+        tiler_imp = __import__("03_tiler")
+        recliner2GCBM = __import__("04_recliner2GCBM")
+        GCBMconfig = __import__("05_GCBM_config")
+        
+        # Logging
+        debug_log = r'logs\DebugLogPreprocessor.log'
+        if not os.path.exists(os.path.dirname(debug_log)):
+            os.makedirs(os.path.dirname(debug_log))
+        elif os.path.exists(debug_log):
+            os.unlink(debug_log)
+        logging.basicConfig(filename=debug_log, format='[%(asctime)s] %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%b%d %H:%M:%S')
 
-    load_inputs()
+        load_inputs()
 
-    sb_base_percent = tiler_scenarios.itervalues().next()[0]
+        sb_base_percent = tiler_scenarios.itervalues().next()[0]
 
-    ### Initialize function classes
-    PP = preprocess_tools.progressprinter.ProgressPrinter()
-    fishnet = gridGeneration.create_grid.Fishnet(inventory, resolution, PP)
-    inventoryGridder = gridGeneration.grid_inventory.GridInventory(inventory, future_dist_input_dir, PP, area_majority_rule)
-    mergeDist = rollback.merge_disturbances.MergeDisturbances(inventory, [historicFire, historicHarvest], PP)
-    intersect = rollback.intersect_disturbances_inventory.IntersectDisturbancesInventory(inventory, spatialBoundaries, rollback_range, PP)
-    calcDistDEdiff = rollback.update_inventory.CalculateDistDEdifference(inventory, PP)
-    calcNewDistYr = rollback.update_inventory.CalculateNewDistYr(inventory, rollback_range, historicHarvest.getYearField(), PP)
-    updateInv = rollback.update_inventory.updateInvRollback(inventory, inventory_raster_out, rollbackDisturbances, rollback_range, resolution, sb_base_percent, reportingIndicators, PP)
-    tiler = tiler_imp.tiler.Tiler(
-        spatialBoundaries=spatialBoundaries,
-        inventory=inventory,
-        rollbackDisturbances=rollbackDisturbances,
-        NAmat=NAmat,
-        rollback_range=rollback_range, historic_range=historic_range, future_range=future_range,activity_start_year=activity_start_year,
-        resolution=resolution, ProgressPrinter=PP
-    )
-    projDistGenerator = tiler_imp.projected_disturbances_placeholder.ProjectedDisturbancesPlaceholder(inventory, rollbackDisturbances,
-        future_range, rollback_range, activity_start_year, PP)
-    r2GCBM = recliner2GCBM.recliner2GCBM.Recliner2GCBM(config_dir=recliner2gcbm_config_dir, output_path=recliner2gcbm_output_path,
-        transitionRules=transitionRules,yieldTable=yieldTable,aidb=AIDB,ProgressPrinter=PP, exe_path=recliner2gcbm_exe_path)
-    gcbmConfigurer = GCBMconfig.configure_gcbm.ConfigureGCBM(output_dir=gcbm_raw_output_dir, gcbm_configs_dir=gcbm_configs_dir,
-        GCBM_scenarios=GCBM_scenarios, base_scenario='Base', inventory=inventory, reportingIndicators=reportingIndicators,
-        resolution=resolution,rollback_range=rollback_range,actv_start_year=activity_start_year,future_range=future_range,ProgressPrinter=PP)
+        ### Initialize function classes
+        PP = preprocess_tools.progressprinter.ProgressPrinter()
+        fishnet = gridGeneration.create_grid.Fishnet(inventory, resolution, PP)
+        inventoryGridder = gridGeneration.grid_inventory.GridInventory(inventory, future_dist_input_dir, PP, area_majority_rule)
+        mergeDist = rollback.merge_disturbances.MergeDisturbances(inventory, [historicFire, historicHarvest], PP)
+        intersect = rollback.intersect_disturbances_inventory.IntersectDisturbancesInventory(inventory, spatialBoundaries, rollback_range, PP)
+        calcDistDEdiff = rollback.update_inventory.CalculateDistDEdifference(inventory, PP)
+        calcNewDistYr = rollback.update_inventory.CalculateNewDistYr(inventory, rollback_range, historicHarvest.getYearField(), PP)
+        updateInv = rollback.update_inventory.updateInvRollback(inventory, inventory_raster_out, rollbackDisturbances, rollback_range, resolution, sb_base_percent, reportingIndicators, PP)
+        tiler = tiler_imp.tiler.Tiler(
+            spatialBoundaries=spatialBoundaries,
+            inventory=inventory,
+            rollbackDisturbances=rollbackDisturbances,
+            NAmat=NAmat,
+            rollback_range=rollback_range, historic_range=historic_range, future_range=future_range,activity_start_year=activity_start_year,
+            resolution=resolution, ProgressPrinter=PP
+        )
+        projDistGenerator = tiler_imp.projected_disturbances_placeholder.ProjectedDisturbancesPlaceholder(inventory, rollbackDisturbances,
+            future_range, rollback_range, activity_start_year, PP)
+        r2GCBM = recliner2GCBM.recliner2GCBM.Recliner2GCBM(config_dir=recliner2gcbm_config_dir, output_path=recliner2gcbm_output_path,
+            transitionRules=transitionRules,yieldTable=yieldTable,aidb=AIDB,ProgressPrinter=PP, exe_path=recliner2gcbm_exe_path)
+        gcbmConfigurer = GCBMconfig.configure_gcbm.ConfigureGCBM(output_dir=gcbm_raw_output_dir, gcbm_configs_dir=gcbm_configs_dir,
+            GCBM_scenarios=GCBM_scenarios, base_scenario='Base', inventory=inventory, reportingIndicators=reportingIndicators,
+            resolution=resolution,rollback_range=rollback_range,actv_start_year=activity_start_year,future_range=future_range,ProgressPrinter=PP)
 
-    general_lyrs = None
+        general_lyrs = None
 
-    ### Execute Functions
+        ### Execute Functions
 
-    # -- Grid generation
-    fishnet.createFishnet()
+        # -- Grid generation
+        fishnet.createFishnet()
 
-    # -- Grid inventory
-    inventoryGridder.gridInventory()
+        # -- Grid inventory
+        inventoryGridder.gridInventory()
 
-    if not rollback_enabled: # ***
-        inventoryGridder.exportInventory(inventory_raster_out, resolution) # ***
+        if not rollback_enabled: # ***
+            inventoryGridder.exportInventory(inventory_raster_out, resolution) # ***
 
-    else: # ***
-        # -- Start of rollback
-        mergeDist.runMergeDisturbances()
-        intersect.runIntersectDisturbancesInventory()
-        calcDistDEdiff.calculateDistDEdifference()
-        calcNewDistYr.calculateNewDistYr()
-        updateInv.updateInvRollback()  # ***
-        # -- End of rollback
+        else: # ***
+            # -- Start of rollback
+            mergeDist.runMergeDisturbances()
+            intersect.runIntersectDisturbancesInventory()
+            calcDistDEdiff.calculateDistDEdifference()
+            calcNewDistYr.calculateNewDistYr()
+            updateInv.updateInvRollback()  # ***
+            # -- End of rollback
 
-    # -- Configure Tiler
-    general_lyrs = configure_tiler()
+        # -- Configure Tiler
+        general_lyrs = configure_tiler()
 
-    ## -- Run Tiler for each scenario
-    for base_scenario in [scen for scen in tiler_scenarios if scen.lower()=='base']: # ***
-        #tiler.processProjectedDisturbances(base_scenario, tiler_scenarios[base_scenario])
-        transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
-    for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
-        #tiler.processProjectedDisturbances(miti_scenario, tiler_scenarios[miti_scenario])
-        if not transitionRules:
-            transitionRules = tiler.runTiler(tiler_output_dir, miti_scenario, True)
-        else:
-            tiler.runTiler(tiler_output_dir, miti_scenario, False)
+        ## -- Run Tiler for each scenario
+        for base_scenario in [scen for scen in tiler_scenarios if scen.lower()=='base']: # ***
+            #tiler.processProjectedDisturbances(base_scenario, tiler_scenarios[base_scenario])
+            transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
+        for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
+            #tiler.processProjectedDisturbances(miti_scenario, tiler_scenarios[miti_scenario])
+            if not transitionRules:
+                transitionRules = tiler.runTiler(tiler_output_dir, miti_scenario, True)
+            else:
+                tiler.runTiler(tiler_output_dir, miti_scenario, False)
 
 
-    # -- Prep and run recliner2GCBM
-    r2GCBM.prepTransitionRules(transitionRules) # ***
-    r2GCBM.prepYieldTable(yieldTable)
-    r2GCBM.runRecliner2GCBM() # ***
+        # -- Prep and run recliner2GCBM
+        r2GCBM.prepTransitionRules(transitionRules) # ***
+        r2GCBM.prepYieldTable(yieldTable)
+        r2GCBM.runRecliner2GCBM() # ***
 
-    # -- Configure GCBM
-    gcbmConfigurer.configureGCBM(recliner2gcbm_output_path, general_lyrs, tiler_output_dir) # ***
+        # -- Configure GCBM
+        gcbmConfigurer.configureGCBM(recliner2gcbm_output_path, general_lyrs, tiler_output_dir) # ***
+
+        # Create success flag file that other tools can check for.
+        with open("success", "w"): pass
+    except:
+        # Create failure flag file that other tools can check for.
+        with open("failure", "w"): pass
+        raise
