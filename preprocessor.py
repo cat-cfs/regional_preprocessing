@@ -268,7 +268,7 @@ if __name__=="__main__":
 
     ## -- Run Tiler for each scenario
     for base_scenario in [scen for scen in tiler_scenarios if scen.lower()=='base']: # ***
-        tiler.processProjectedDisturbances(base_scenario, tiler_scenarios[base_scenario])
+        tiler.processProjectedDisturbancesRasters(scenario=base_scenario, raster_dir=future_dist_input_dir)
         transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
     for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
         tiler.processProjectedDisturbances(miti_scenario, tiler_scenarios[miti_scenario])
