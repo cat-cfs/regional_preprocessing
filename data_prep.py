@@ -1,4 +1,6 @@
 ### GCBM Preprocessing
+
+## Imports
 import os
 import sys
 import cPickle
@@ -83,7 +85,7 @@ if __name__=="__main__":
     # directory path to the external data directory for relative paths
     external_data = r'G:\GCBM\15_SFI\05_working_SK\00_external_data'
     # Tile resolution in degrees
-    resolution = 0.01
+    resolution = 0.001
 
     # The percent of harvest area slashburned in the Base scenario
     sb_percent = 25
@@ -131,12 +133,12 @@ if __name__=="__main__":
     # directory or geodatabase
     harvest_workspace = r"{}\01_spatial\03_disturbances\01_historic\02_harvest".format(external_data)
     # filter to get all layers within the directory/geodatabase, following glob syntax
-    harvest_filter = "C2CHarvest2011_SK.shp"
+    harvest_filter = "C2CHarvest2015_SK.shp"
     # the field from which the year can be extracted
     harvest_year_field = "HARV_YR"
 	
     wildfire_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire".format(external_data)
-    wildfire_filter = "C2CFire2011_SK.shp"
+    wildfire_filter = "C2CFire2015_SK.shp"
     wildfire_year_field = "FIRE_YR"
     # set each to None if there is no insect data
     insect_workspace = None
