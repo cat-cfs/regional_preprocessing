@@ -1,6 +1,9 @@
 ### GCBM Preprocessing
 
 ## Imports
+# import archook
+# archook.get_arcpy()
+# import arcpy
 import os
 import sys
 import cPickle
@@ -77,15 +80,15 @@ if __name__=="__main__":
 
     #### Variables
     # FMU number as a string
-    FMU_number = '90025'
+    FMU_number = '80002'
     # FMU name, replace spaces in the name with underscores
-    FMU_name = 'Pasquia_Porcupine_FMA'
+    FMU_name = 'Mountain_10_FMA'
     # directory path to the working directory for relative paths
-    working_directory = r'G:\GCBM\15_SFI\05_working_SK\FMU_{}_{}'.format(FMU_number,FMU_name)
+    working_directory = r'G:\GCBM\15_SFI\05_working_MB\FMU_{}_{}'.format(FMU_number,FMU_name)
     # directory path to the external data directory for relative paths
-    external_data = r'G:\GCBM\15_SFI\05_working_SK\00_external_data'
+    external_data = r'G:\GCBM\15_SFI\05_working_MB\00_external_data'
     # Tile resolution in degrees
-    resolution = 0.001
+    resolution = 0.01
 
     # The percent of harvest area slashburned in the Base scenario
     sb_percent = 25
@@ -101,44 +104,45 @@ if __name__=="__main__":
 
     ## Year ranges
     historic_range = [1990,2015]
-    rollback_range = [1990,2000]
+    rollback_range = [1990,2014]
     future_range = [2016,2015]
     # Activity start year must be after historic range
     activity_start_year = 2018
 
 
     #### Spatial Inputs
-    province = "Saskatchewan"
+    province = "Manitoba"
 
      ## Inventory
     # Path the the inventory gdb workspace
     inventory_workspace = r"{}\01_spatial\02_inventory\Processed.gdb".format(external_data)
     # Layer name of the inventory in the gdb
-    inventory_layer = "Pasquia_inv"
+    inventory_layer = "MB_inv"
     # The starting year of the inventory
-    inventory_year = 2003
+    inventory_year = 2016
     # A dictionary with the classifiers as keys and the associated field names (as
     # they appear in the inventory) as values.
     inventory_classifier_attr = {
-        "RSM_KEY_BA": "RSM_KEY_BASE_CD",
-        "FMZ_ID":"FMZ_ID",
-		"LdSpp":"LdSpp"
+        "MU_ID": "MU_ID",
+        "STRATA": "STRATA",
+		"DENAGG": "DENAGG",
+		"SP1_SUM":"SP1_SUM"
     }
     inventory_field_names = {
-        "age": "AGE_2003",
-		"species": "LdSpp"
+        "age": "AGE_2016",
+		"species": "SP1_SUM"
     }
 
     ## Disturbances
     # directory or geodatabase
     harvest_workspace = r"{}\01_spatial\03_disturbances\01_historic\02_harvest".format(external_data)
     # filter to get all layers within the directory/geodatabase, following glob syntax
-    harvest_filter = "C2CHarvest2015_SK.shp"
+    harvest_filter = "C2CHarvest2011_MB.shp"
     # the field from which the year can be extracted
     harvest_year_field = "HARV_YR"
 	
     wildfire_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire".format(external_data)
-    wildfire_filter = "C2CFire2015_SK.shp"
+    wildfire_filter = "C2CFire2011_MB.shp"
     wildfire_year_field = "FIRE_YR"
     # set each to None if there is no insect data
     insect_workspace = None
@@ -155,7 +159,7 @@ if __name__=="__main__":
     # change only the associated values for "field" and "code"
     study_area_filter = {
         "field": "PSPU_ID",
-        "code": "90025"
+        "code": "80002"
     }
     # field names for the Admin and Eco attributes in the spatial_boundaries_ri file
     spatial_boundaries_attr = {
@@ -232,17 +236,17 @@ if __name__=="__main__":
 
     ## Yield table
     # path to yield table in external data
-    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\Pasquia_yield.csv".format(external_data)
+    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\MB_LB_yields.csv".format(external_data)
     # path to the yield table (recommended to be in the recliner2gcbm config directory)
-    yieldTable_path = r"{}\Pasquia_yield.csv".format(recliner2gcbm_config_dir)
+    yieldTable_path = r"{}\MB_LB_yields.csv".format(recliner2gcbm_config_dir)
     # The classifiers as keys and the column as value
-    yieldTable_classifier_cols = {"RSM_KEY_BA":0, "FMZ_ID":1,"LdSpp":2}
+    yieldTable_classifier_cols = {"MU_ID":0, "STRATA":1,"DENAGG":2, "SP1_SUM":3}
     # True if the first row of the yield table is a header
     yieldTable_header = True
     # year interval between age increments
     yieldTable_interval = 5
     # species column and increment range
-    yieldTable_cols = {"SpeciesCol":3,"IncrementRange":[4,45]}
+    yieldTable_cols = {"SpeciesCol":4,"IncrementRange":[5,46]}
 
     ## AIDB
     # path to aidb in external data where disturbance matrix is already configured
