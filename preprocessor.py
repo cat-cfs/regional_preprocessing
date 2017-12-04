@@ -22,8 +22,7 @@ def configure_tiler():
 
         # Historic Fire Disturbances
         fire_dt = "Wild Fires"
-        tiler.processHistoricFireDisturbances(historicFire1, fire_dt)
-        tiler.processHistoricFireDisturbances(historicFire2, fire_dt)
+        tiler.processHistoricFireDisturbances(historicFire, fire_dt)
 
         # Historic Harvest
         cc_dt = "Clearcut harvesting with salvage"
@@ -52,8 +51,7 @@ def save_inputs():
         if not os.path.exists('inputs'):
             os.mkdir('inputs')
         cPickle.dump(inventory, open(r'inputs\inventory.pkl', 'wb'))
-        cPickle.dump(historicFire1, open(r'inputs\historicFire1.pkl', 'wb'))
-        cPickle.dump(historicFire2, open(r'inputs\historicFire2.pkl', 'wb'))
+        cPickle.dump(historicFire, open(r'inputs\historicFire.pkl', 'wb'))
         cPickle.dump(historicHarvest, open(r'inputs\historicHarvest.pkl', 'wb'))
         cPickle.dump(historicInsect, open(r'inputs\historicInsect.pkl', 'wb'))
         cPickle.dump(rollbackDisturbances, open(r'inputs\rollbackDisturbances.pkl', 'wb'))
@@ -88,8 +86,7 @@ def save_inputs():
 
 def load_inputs():
     global inventory
-    global historicFire1
-    global historicFire2
+    global historicFire
     global historicHarvest
     global historicInsect
     global rollbackDisturbances
@@ -122,8 +119,7 @@ def load_inputs():
         print "----------------------\nLoading inputs...",
         logging.info('Loading inputs from {}'.format(os.path.join(os.getcwd(),'inputs')))
         inventory = cPickle.load(open(r'inputs\inventory.pkl'))
-        historicFire1 = cPickle.load(open(r'inputs\historicFire1.pkl'))
-        historicFire2 = cPickle.load(open(r'inputs\historicFire2.pkl'))
+        historicFire = cPickle.load(open(r'inputs\historicFire.pkl'))
         historicHarvest = cPickle.load(open(r'inputs\historicHarvest.pkl'))
         historicInsect = cPickle.load(open(r'inputs\historicInsect.pkl'))
         rollbackDisturbances = cPickle.load(open(r'inputs\rollbackDisturbances.pkl'))
@@ -219,7 +215,7 @@ if __name__=="__main__":
         PP = preprocess_tools.progressprinter.ProgressPrinter()
         fishnet = gridGeneration.create_grid.Fishnet(inventory, resolution, PP)
         inventoryGridder = gridGeneration.grid_inventory.GridInventory(inventory, future_dist_input_dir, PP, area_majority_rule)
-        mergeDist = rollback.merge_disturbances.MergeDisturbances(inventory, [historicFire1, historicFire2, historicHarvest], PP)
+        mergeDist = rollback.merge_disturbances.MergeDisturbances(inventory, [historicFire, historicHarvest], PP)
         intersect = rollback.intersect_disturbances_inventory.IntersectDisturbancesInventory(inventory, spatialBoundaries, rollback_range, PP)
         calcDistDEdiff = rollback.update_inventory.CalculateDistDEdifference(inventory, PP)
         calcNewDistYr = rollback.update_inventory.CalculateNewDistYr(inventory, rollback_range, historicHarvest.getYearField(), PP)
