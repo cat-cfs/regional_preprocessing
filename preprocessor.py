@@ -37,6 +37,7 @@ def configure_tiler():
                 "S": "Mountain Pine Beetle - Severe Impact",
                 "M": "Mountain Pine Beetle - Moderate Impact",
                 "L": "Mountain Pine Beetle - Low Impact",
+				"T": "Mountain Pine Beetle - Low Impact",
                 "4": "Mountain Pine Beetle - Very Severe Impact",
                 "3": "Mountain Pine Beetle - Severe Impact",
                 "2": "Mountain Pine Beetle - Moderate Impact",
