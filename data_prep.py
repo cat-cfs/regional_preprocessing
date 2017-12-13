@@ -1,9 +1,6 @@
 ### GCBM Preprocessing
 
 ## Imports
-# import archook
-# archook.get_arcpy()
-# import arcpy
 import os
 import sys
 import cPickle
@@ -88,7 +85,7 @@ if __name__=="__main__":
     # directory path to the external data directory for relative paths
     external_data = r'G:\GCBM\15_SFI\05_working_MB\00_external_data'
     # Tile resolution in degrees
-    resolution = 0.01
+    resolution = 0.001
 
     # The percent of harvest area slashburned in the Base scenario
     sb_percent = 25
@@ -126,7 +123,9 @@ if __name__=="__main__":
         "MU_ID": "MU_ID",
         "STRATA": "STRATA",
 		"DENAGG": "DENAGG",
-		"SP1_SUM":"SP1_SUM"
+		"SP1_SUM":"SP1_SUM",
+		"SIC": "SIC",
+		"SITE": "SITE"
     }
     inventory_field_names = {
         "age": "AGE_2016",
@@ -236,17 +235,17 @@ if __name__=="__main__":
 
     ## Yield table
     # path to yield table in external data
-    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\MB_LB_yields.csv".format(external_data)
+    original_yieldTable_path = r"{}\02_aspatial\02_yield_table\MB_ALL_yields.csv".format(external_data)
     # path to the yield table (recommended to be in the recliner2gcbm config directory)
-    yieldTable_path = r"{}\MB_LB_yields.csv".format(recliner2gcbm_config_dir)
+    yieldTable_path = r"{}\MB_ALL_yields.csv".format(recliner2gcbm_config_dir)
     # The classifiers as keys and the column as value
-    yieldTable_classifier_cols = {"MU_ID":0, "STRATA":1,"DENAGG":2, "SP1_SUM":3}
+    yieldTable_classifier_cols = {"MU_ID":0, "STRATA":1,"DENAGG":2, "SP1_SUM":3, "SIC":4, "SITE":5}
     # True if the first row of the yield table is a header
     yieldTable_header = True
     # year interval between age increments
     yieldTable_interval = 5
     # species column and increment range
-    yieldTable_cols = {"SpeciesCol":4,"IncrementRange":[5,46]}
+    yieldTable_cols = {"SpeciesCol":6,"IncrementRange":[7,48]}
 
     ## AIDB
     # path to aidb in external data where disturbance matrix is already configured
