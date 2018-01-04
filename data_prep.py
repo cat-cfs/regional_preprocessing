@@ -17,7 +17,7 @@ def save_inputs():
             os.mkdir('inputs')
         cPickle.dump(inventory, open(r'inputs\inventory.pkl', 'wb'))
         cPickle.dump(historicFire, open(r'inputs\historicFire.pkl', 'wb'))
-        cPickle.dump(historicHarvest, open(r'inputs\historicHarvest.pkl', 'wb'))
+        cPickle.dump(historicPrescribedBurn, open(r'inputs\historicPrescribedBurn.pkl', 'wb'))
         cPickle.dump(historicInsect, open(r'inputs\historicInsect.pkl', 'wb'))
         cPickle.dump(rollbackDisturbances, open(r'inputs\rollbackDisturbances.pkl', 'wb'))
         cPickle.dump(spatialBoundaries, open(r'inputs\spatialBoundaries.pkl', 'wb'))
@@ -55,7 +55,6 @@ def save_inputs():
 #                                                     []: Restricting qualities
 # Inventory [feature layer in geodatabase]
 # Historic Fire Disturbances (C2C) [shapefile]]
-# Historic Harvest Disturbances (BC Cutblocks) [shapefile]
 # Historic Insect Disturbances [shapefiles where year is the last 4 characters
 #    before file extention]
 # Spatial Boundaries (TSA and PSPU) [shapefiles]
@@ -85,9 +84,6 @@ if __name__=="__main__":
     # Tile resolution in degrees
     resolution = 0.001
 
-    # The percent of harvest area slashburned in the Base scenario
-    sb_percent = 10
-
     # Set true to enable rollback
     rollback_enabled = True
 
@@ -99,7 +95,7 @@ if __name__=="__main__":
 
     ## Year ranges
     historic_range = [1990,2016]
-    rollback_range = [1990,2016]
+    rollback_range = [1990,1990]
     future_range = [2017,2020]
     # Activity start year must be after historic range
     activity_start_year = 2018
@@ -128,17 +124,17 @@ if __name__=="__main__":
 
     ## Disturbances
     # directory or geodatabase
-    wildfire_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire".format(external_data)
+    wildfire_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire\shp_files".format(external_data)
     # filter to get specific layer within the directory/geodatabase
-    wildfire_filter = "C2CFire1990_2011_BCParks.shp"
+    wildfire_filter = "Fire_*.shp"
     # the field from which the year can be extracted. These must have different names for each disturbance
     wildfire_year_field = "DIST_YR"
     # directory or geodatabase
-    harvest_workspace = r"{}\01_spatial\03_disturbances\01_historic\02_harvest".format(external_data)
+    prescribed_burn_workspace = r"{}\01_spatial\03_disturbances\01_historic\01_fire".format(external_data)
     # filter to get specific layer within the directory/geodatabase
-    harvest_filter = "C2CHarvest1990_2011.shp"
+    prescribed_burn_filter = "PB_All.shp"
     # the field from which the year can be extracted. These must have different names for each disturbance
-    harvest_year_field = "DIST_YR"
+    prescribed_burn_year_field = "DIST_YR"
     # directory or geodatabase
     insect_workspace = r"{}\01_spatial\03_disturbances\01_historic\03_insect".format(external_data)
     # filter to get all layers within the directory/geodatabase, following glob syntax
@@ -181,20 +177,20 @@ if __name__=="__main__":
     inventory = preprocess_tools.inputs.Inventory(workspace=inventory_workspace, filter=inventory_layer,
         year=inventory_year, classifiers_attr=inventory_classifier_attr, field_names=inventory_field_names, province=province)
     historicFire = preprocess_tools.inputs.HistoricDisturbance(wildfire_workspace, wildfire_filter, wildfire_year_field)
-    historicHarvest = preprocess_tools.inputs.HistoricDisturbance(harvest_workspace, harvest_filter, harvest_year_field)
+    historicPrescribedBurn = preprocess_tools.inputs.HistoricDisturbance(prescribed_burn_workspace, prescribed_burn_filter, prescribed_burn_year_field)
     historicInsect = preprocess_tools.inputs.HistoricDisturbance(insect_workspace, insect_filter, None)
     spatialBoundaries = preprocess_tools.inputs.SpatialBoundaries(spatial_reference, spatial_boundaries, spatial_boundaries_ri,
         "shp", study_area_filter, spatial_boundaries_attr)
     NAmat = preprocess_tools.inputs.NAmericaMAT(os.path.dirname(NAmat_path), os.path.basename(NAmat_path))
     rollbackDisturbances = preprocess_tools.inputs.RollbackDisturbances(rollback_dist_out)
 
-    external_spatial_data = [historicFire, historicHarvest, historicInsect, NAmat, spatialBoundaries]
+    external_spatial_data = [historicFire, historicInsect, historicPrescribedBurn, NAmat, spatialBoundaries]
     # Warning: All spatial inputs that are not in WGS 1984 coordinate system need
     # to be reprojected
     #reproject = [
-        # historicFire1, historicFire2, historicHarvest, historicInsect, NAmat, spatialBoundaries
+        # historicFire1, historicFire2, historicInsect, NAmat, spatialBoundaries
     #]
-    clip = [historicFire, historicHarvest, historicInsect]
+    clip = [historicFire, historicInsect, historicPrescribedBurn]
     copy = [sp for sp in external_spatial_data if sp not in clip]
 
     TSA_filter = '"{}" = {}'.format(study_area_filter["field"], study_area_filter["code"])
@@ -216,7 +212,7 @@ if __name__=="__main__":
     # Different scenarios to be run by the tiler (before Disturbance Matrix distinctions)
     # The scenario 'Base' must be included
     # Format: {<Scenario>: [<Slashburn Percent Base>, <Slashburn Percent After Actv>, <Harvest Percent After Actv>]}
-    tiler_scenarios = {'Base':[sb_percent, sb_percent, 100]}
+    tiler_scenarios = {'Base':[1, 1, 1]}
     # GCBM scenarios (after Disturbance Matrix distinctions) with the associated tiler scenario as the key
     GCBM_scenarios = {'Base':'Base'}
 
@@ -261,10 +257,9 @@ if __name__=="__main__":
     # paths to the tiled layers of any extra reporting indicators. these would be in
     # addition to the classifiers and eco boundary as reporting indicators
     reporting_indicators = {
-        "ProtectedAreas":r"{}\01_spatial\05_reporting_indicators\protectedAreas_moja".format(external_data),
-        "THLB": None
+        "ProtectedAreas":r"{}\01_spatial\05_reporting_indicators\protectedAreas_moja".format(external_data)
     }
-    gcbm_exe = r'm:\spatially_explicit\03_tools\gcbm\moja.cli.exe'
+    gcbm_exe = r'M:\Spatially_explicit\03_Tools\GCBMBuilds\2017_12_13\moja.cli.exe'
 
 
     ### Initialize Aspatial Inputs
