@@ -79,7 +79,7 @@ if __name__=="__main__":
     # FMU number as a string
     FMU_number = '80002'
     # FMU name, replace spaces in the name with underscores
-    FMU_name = 'Mountain_10_FMA'
+    FMU_name = 'Mountain_FMA'
     # directory path to the working directory for relative paths
     working_directory = r'G:\GCBM\15_SFI\05_working_MB\FMU_{}_{}'.format(FMU_number,FMU_name)
     # directory path to the external data directory for relative paths
