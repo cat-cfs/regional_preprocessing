@@ -124,8 +124,7 @@ if __name__=="__main__":
         "STRATA": "STRATA",
 		"DENAGG": "DENAGG",
 		"SP1_SUM":"SP1_SUM",
-		"SIC": "SIC",
-		"SITE": "SITE"
+		"SIC": "SIC"
     }
     inventory_field_names = {
         "age": "AGE_2016",
@@ -239,7 +238,7 @@ if __name__=="__main__":
     # path to the yield table (recommended to be in the recliner2gcbm config directory)
     yieldTable_path = r"{}\MB_ALL_yields.csv".format(recliner2gcbm_config_dir)
     # The classifiers as keys and the column as value
-    yieldTable_classifier_cols = {"MU_ID":0, "STRATA":1,"DENAGG":2, "SP1_SUM":3, "SIC":4, "SITE":5}
+    yieldTable_classifier_cols = {"MU_ID":0, "STRATA":1,"DENAGG":2, "SP1_SUM":3, "SIC":4}
     # True if the first row of the yield table is a header
     yieldTable_header = True
     # year interval between age increments
