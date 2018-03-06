@@ -152,6 +152,7 @@ def load_inputs():
         recliner2gcbm_output_path = cPickle.load(open(r'inputs\recliner2gcbm_output_path.pkl'))
         recliner2gcbm_exe_path = cPickle.load(open(r'inputs\recliner2gcbm_exe_path.pkl'))
         future_dist_input_dir = cPickle.load(open(r'inputs\future_dist_input_dir.pkl'))
+        future_dist_output_dir = cPickle.load(open(r'inputs\future_dist_output_dir.pkl'))
         gcbm_raw_output_dir = cPickle.load(open(r'inputs\gcbm_raw_output_dir.pkl'))
         gcbm_configs_dir = cPickle.load(open(r'inputs\gcbm_configs_dir.pkl'))
         reportingIndicators = cPickle.load(open(r'inputs\reportingIndicators.pkl'))
@@ -268,10 +269,18 @@ if __name__=="__main__":
 
     ## -- Run Tiler for each scenario
     for base_scenario in [scen for scen in tiler_scenarios if scen.lower()=='base']: # ***
-        tiler.processProjectedDisturbancesRasters(scenario=base_scenario, raster_dir=future_dist_input_dir)
+        tiler.processProjectedDisturbancesRasters(
+            scenario=base_scenario,
+            base_raster_dir = future_dist_input_dir,
+            scenario_raster_dir = future_dist_output_dir,
+            params = tiler_scenarios[base_scenario])
         transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
     for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
-        tiler.processProjectedDisturbances(miti_scenario, tiler_scenarios[miti_scenario])
+        tiler.processProjectedDisturbancesRasters(
+            scenario = miti_scenario,
+            base_raster_dir = future_dist_input_dir,
+            scenario_raster_dir = future_dist_output_dir,
+            params = tiler_scenarios[miti_scenario])
         tiler.runTiler(tiler_output_dir, miti_scenario, False)
 
     # -- Prep and run recliner2GCBM
