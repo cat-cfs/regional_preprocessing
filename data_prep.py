@@ -1,9 +1,3 @@
-### GCBM Preprocessing
-
-## Imports
-import archook
-archook.get_arcpy()
-import arcpy
 import os
 import sys
 import cPickle
@@ -83,13 +77,13 @@ if __name__=="__main__":
 
     #### Variables
     # TSA number as a string
-    TSA_number = '23'
+    TSA_number = '2'
     # TSA name, replace spaces in the name with underscores
-    TSA_name = '100_Mile_House'
+    TSA_name = 'Boundary'
     # directory path to the working directory for relative paths
-    working_directory = r'G:\GCBM\17_BC_ON_1ha\05_working_BC\TSA_{}_{}'.format(TSA_number,TSA_name)
+    working_directory = r'F:\GCBM\17_BC_ON_1ha\05_working_BC_1ha\TSA_{}_{}'.format(TSA_number,TSA_name)
     # directory path to the external data directory for relative paths
-    external_data = r'G:\GCBM\17_BC_ON_1ha\05_working_BC\00_external_data'
+    external_data = r'F:\GCBM\17_BC_ON_1ha\05_working_BC_1ha\00_external_data'
     # Tile resolution in degrees
     resolution = 0.001
 
@@ -103,12 +97,12 @@ if __name__=="__main__":
     # Set false for a centroid rule to be used (take attributes from the polygon at the
     # center of the grid cell)
     # The area majority rule is more robust but requires more memory and computing time
-    area_majority_rule = True
+    area_majority_rule = False
 
     ## Year ranges
-    historic_range = [1990,2015]
-    rollback_range = [1990,2015]
-    future_range = [2016,2070]
+    historic_range = [1990,2014]
+    rollback_range = [1990,2013]
+    future_range = [2015,2070]
     # Activity start year must be after historic range
     activity_start_year = 2018
 
@@ -161,7 +155,7 @@ if __name__=="__main__":
     # change only the associated values for "field" and "code"
     study_area_filter = {
         "field": "TSA_NUMBER",
-        "code": "'100 Mile House TSA'"
+        "code": "'Boundary TSA'"
     }
     # field names for the Admin and Eco attributes in the spatial_boundaries_ri file
     spatial_boundaries_attr = {
@@ -199,9 +193,9 @@ if __name__=="__main__":
     external_spatial_data = [historicFire1, historicFire2, historicHarvest, historicInsect, NAmat, spatialBoundaries]
     # Warning: All spatial inputs that are not in WGS 1984 coordinate system need
     # to be reprojected
-    reproject = [
+    #reproject = [
         # historicFire1, historicFire2, historicHarvest, historicInsect, NAmat, spatialBoundaries
-    ]
+    #]
     clip = [historicFire1, historicFire2, historicHarvest, historicInsect]
     copy = [sp for sp in external_spatial_data if sp not in clip]
 
@@ -210,8 +204,8 @@ if __name__=="__main__":
     inventory.clipCutPolys(inventory.getWorkspace(), spatialBoundaries.getPath(), TSA_filter,
         r'{}\01a_pretiled_layers\00_Workspace.gdb'.format(working_directory), name='tsa{}'.format(TSA_number))
 
-    for spatial_input in reproject:
-        spatial_input.reproject(spatial_input.getWorkspace().replace(reprojected_redirection[0], reprojected_redirection[1]))
+    #for spatial_input in reproject:
+    #    spatial_input.reproject(spatial_input.getWorkspace().replace(reprojected_redirection[0], reprojected_redirection[1]))
     for spatial_input in clip:
         spatial_input.clip(spatial_input.getWorkspace(), spatialBoundaries.getPath(), TSA_filter,
             spatial_input.getWorkspace().replace(clipped_redirection[0], clipped_redirection[1]))
@@ -224,9 +218,9 @@ if __name__=="__main__":
     # Different scenarios to be run by the tiler (before Disturbance Matrix distinctions)
     # The scenario 'Base' must be included
     # Format: {<Scenario>: [<Slashburn Percent Base>, <Slashburn Percent After Actv>, <Harvest Percent After Actv>]}
-    tiler_scenarios = {'Base':[sb_percent, sb_percent, 100],'B':[sb_percent, sb_percent, 98],'C':[sb_percent, sb_percent/2.0,100]}
+    tiler_scenarios = {'Base':[sb_percent, sb_percent, 100],'A':[sb_percent, sb_percent, 100],'B':[sb_percent, sb_percent, 98],'C':[sb_percent, sb_percent/2.0,100],'D':[sb_percent, sb_percent/2.0,100]}
     # GCBM scenarios (after Disturbance Matrix distinctions) with the associated tiler scenario as the key
-    GCBM_scenarios = {'Base':'Base', 'A':'Base', 'B':'B', 'C':'C', 'D':'C'}
+    GCBM_scenarios = {'Base':'Base', 'A':'A', 'B':'B', 'C':'C', 'D':'D'}
 
     ## Recliner2GCBM
     recliner2gcbm_config_dir = r"{}\02a_recliner2GCBM_input".format(working_directory)
