@@ -113,6 +113,7 @@ def load_inputs():
     global recliner2gcbm_exe_path
     global tiler_output_dir
     global future_dist_input_dir
+    global future_dist_output_dir
     global gcbm_raw_output_dir
     global gcbm_configs_dir
     global reportingIndicators
@@ -274,15 +275,15 @@ if __name__=="__main__":
         for base_scenario in [scen for scen in tiler_scenarios if scen.lower()=='base']: # ***
             tiler.processProjectedDisturbancesRasters(
                 scenario=base_scenario,
-                base_raster_dir = future_dist_input_dir,
-                scenario_raster_dir = future_dist_output_dir,
+                base_raster_dir = os.path.join(future_dist_input_dir, 'base'),
+                scenario_raster_dir = os.path.join(future_dist_output_dir, base_scenario),
                 params = tiler_scenarios[base_scenario])
             transitionRules = tiler.runTiler(tiler_output_dir, base_scenario, True) # ***
         for miti_scenario in [scen for scen in tiler_scenarios if scen.lower()!='base']:
             tiler.processProjectedDisturbancesRasters(
                 scenario = miti_scenario,
-                base_raster_dir = future_dist_input_dir,
-                scenario_raster_dir = future_dist_output_dir,
+                base_raster_dir = os.path.join(future_dist_input_dir, 'base'),
+                scenario_raster_dir = os.path.join(future_dist_output_dir, miti_scenario),
                 params = tiler_scenarios[miti_scenario])
             tiler.runTiler(tiler_output_dir, miti_scenario, False)
 
