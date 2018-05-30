@@ -266,9 +266,10 @@ if __name__=="__main__":
         general_lyrs = configure_tiler()
 
         ## -- Run Tiler for each scenario
-        for i, (scenario_name, scenario_parameters) in enumerate(tiler_scenarios.iteritems(), 1):
+        tiler_order = ["Base"] + [scen for scen in tiler_scenarios.keys() if scen.lower() != "base"]
+        for i, scenario_name in enumerate(tiler_order, 1):
             write_transition_rules = i == len(tiler_scenarios) # only write transition rules after they've all been collected
-            tiler.processProjectedDisturbances(scenario_name, scenario_parameters)
+            tiler.processProjectedDisturbances(scenario_name, tiler_scenarios[scenario_name])
             transitionRules = tiler.runTiler(tiler_output_dir, scenario_name, write_transition_rules)
 
         # -- Prep and run recliner2GCBM
