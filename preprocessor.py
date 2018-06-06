@@ -76,6 +76,7 @@ def save_inputs():
         cPickle.dump(recliner2gcbm_output_path, open(r'inputs\recliner2gcbm_output_path.pkl', 'wb'))
         cPickle.dump(recliner2gcbm_exe_path, open(r'inputs\recliner2gcbm_exe_path.pkl', 'wb'))
         cPickle.dump(future_dist_input_dir, open(r'inputs\future_dist_input_dir.pkl', 'wb'))
+        cPickle.dump(future_dist_output_dir, open(r'inputs\future_dist_output_dir.pkl', 'wb'))
         cPickle.dump(gcbm_raw_output_dir, open(r'inputs\gcbm_raw_output_dir.pkl', 'wb'))
         cPickle.dump(gcbm_configs_dir, open(r'inputs\gcbm_configs_dir.pkl', 'wb'))
         cPickle.dump(reportingIndicators, open(r'inputs\reportingIndicators.pkl', 'wb'))
@@ -269,7 +270,11 @@ if __name__=="__main__":
         tiler_order = ["Base"] + [scen for scen in tiler_scenarios.keys() if scen.lower() != "base"]
         for i, scenario_name in enumerate(tiler_order, 1):
             write_transition_rules = i == len(tiler_scenarios) # only write transition rules after they've all been collected
-            tiler.processProjectedDisturbances(scenario_name, tiler_scenarios[scenario_name])
+            tiler.processProjectedDisturbancesRasters(
+                scenario = scenario_name,
+                base_raster_dir = os.path.join(future_dist_input_dir, 'base'),
+                scenario_raster_dir = os.path.join(future_dist_output_dir, scenario_name),
+                params = tiler_scenarios[scenario_name])
             transitionRules = tiler.runTiler(tiler_output_dir, scenario_name, write_transition_rules)
 
         # -- Prep and run recliner2GCBM

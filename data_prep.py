@@ -37,6 +37,7 @@ def save_inputs():
         cPickle.dump(recliner2gcbm_output_path, open(r'inputs\recliner2gcbm_output_path.pkl', 'wb'))
         cPickle.dump(recliner2gcbm_exe_path, open(r'inputs\recliner2gcbm_exe_path.pkl', 'wb'))
         cPickle.dump(future_dist_input_dir, open(r'inputs\future_dist_input_dir.pkl', 'wb'))
+        cPickle.dump(future_dist_output_dir, open(r'inputs\future_dist_output_dir.pkl', 'wb'))
         cPickle.dump(gcbm_raw_output_dir, open(r'inputs\gcbm_raw_output_dir.pkl', 'wb'))
         cPickle.dump(gcbm_configs_dir, open(r'inputs\gcbm_configs_dir.pkl', 'wb'))
         cPickle.dump(reportingIndicators, open(r'inputs\reportingIndicators.pkl', 'wb'))
@@ -172,7 +173,8 @@ if __name__=="__main__":
     rollback_dist_out = r"{}\01a_pretiled_layers\03_disturbances\03_rollback\rollbackDist.shp".format(working_directory)
     # future disturbances input directory for woodstock
     future_dist_input_dir = r'{}\01a_pretiled_layers\03_disturbances\02_future\inputs'.format(working_directory)
-
+    future_dist_output_dir = r'{}\01a_pretiled_layers\03_disturbances\02_future\outputs'.format(working_directory)
+    
     reprojected_redirection = ('01_spatial', '03_spatial_reprojected')
     clipped_redirection = (r'00_external_data\01_spatial', r'TSA_{}_{}\01a_pretiled_layers'.format(TSA_number, TSA_name))
 
