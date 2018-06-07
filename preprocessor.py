@@ -114,6 +114,7 @@ def load_inputs():
     global recliner2gcbm_exe_path
     global tiler_output_dir
     global future_dist_input_dir
+    global future_dist_output_dir
     global gcbm_raw_output_dir
     global gcbm_configs_dir
     global reportingIndicators
