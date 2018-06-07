@@ -148,6 +148,7 @@ def load_inputs():
         recliner2gcbm_output_path = cPickle.load(open(r'inputs\recliner2gcbm_output_path.pkl'))
         recliner2gcbm_exe_path = cPickle.load(open(r'inputs\recliner2gcbm_exe_path.pkl'))
         future_dist_input_dir = cPickle.load(open(r'inputs\future_dist_input_dir.pkl'))
+        future_dist_output_dir = cPickle.load(open(r'inputs\future_dist_output_dir.pkl'))
         gcbm_raw_output_dir = cPickle.load(open(r'inputs\gcbm_raw_output_dir.pkl'))
         gcbm_configs_dir = cPickle.load(open(r'inputs\gcbm_configs_dir.pkl'))
         reportingIndicators = cPickle.load(open(r'inputs\reportingIndicators.pkl'))
